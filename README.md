@@ -2,6 +2,11 @@
 
 Повний пакет українізації та автономний графічний інсталятор для AI-середовища розробки **Google Antigravity 2.0**.
 
+![Архітектура](docs/architecture.png)
+
+Інтерактивна схема: [відкрити в браузері](https://riasj1dar.github.io/antigravity-ua/architecture.html)
+(на GitHub файл показує код, не сторінку). Джерело схеми — `docs/architecture.json`.
+
 ---
 
 ## 🚀 Швидке встановлення
@@ -40,6 +45,10 @@
 
 ## 📁 Структура проєкту
 
+- **`docs/`** — архітектурна схема локалізації:
+  - `architecture.json` — джерело істини системи (Archify v1).
+  - `architecture.html` — інтерактивна SVG-візуалізація з підтримкою тем та навігації.
+  - `architecture.png` — статичний знімок схеми для перегляду на GitHub.
 - **`Antigravity_UA_Setup.exe`** — скомпільований автономний GUI-інсталятор (C# WinForms + embedded `app_uk.asar`).
 - **`Installer.cs`** — вихідний код C# інсталятора (компілюється штатним `csc.exe` Windows).
 - **`app_uk.asar`** — упакований архів локалізації Electron.

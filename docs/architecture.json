@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Antigravity UA: Архітектура локалізації",
+    "quality_profile": "showcase",
+    "output": "architecture.html",
+    "viewBox": [
+      1280,
+      580
+    ],
+    "views": [
+      {
+        "id": "shlyah-vstanovlennya",
+        "label": "Шлях встановлення",
+        "focus": [
+          "github",
+          "installer",
+          "fs",
+          "electron"
+        ],
+        "note": "Від перевірки оновлення на GitHub до підміни app.asar."
+      },
+      {
+        "id": "kontur-perekladu",
+        "label": "Контур ін'єкції та DOM",
+        "focus": [
+          "electron",
+          "bridge",
+          "injector",
+          "ui"
+        ],
+        "note": "Ізольований preload міст та динамічний переклад DOM у реальному часі."
+      },
+      {
+        "id": "zahyst-kodu",
+        "label": "Захист коду й лігатур",
+        "focus": [
+          "shield",
+          "ui"
+        ],
+        "note": "Ізоляція Monaco Editor, коду, консолей та шрифтових гліфів."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "github",
+      "type": "external",
+      "label": "GitHub Releases",
+      "sublabel": "api.github.com · v1.0.0+",
+      "pos": [
+        60,
+        110
+      ],
+      "size": [
+        170,
+        66
+      ],
+      "tag": "Публічний репозиторій"
+    },
+    {
+      "id": "installer",
+      "type": "frontend",
+      "label": "Antigravity_UA_Setup.exe",
+      "sublabel": "WinForms · .NET 4.0 · 4.7 МБ",
+      "pos": [
+        60,
+        280
+      ],
+      "size": [
+        170,
+        72
+      ],
+      "tag": "Автономний GUI"
+    },
+    {
+      "id": "fs",
+      "type": "database",
+      "label": "%LOCALAPPDATA%",
+      "sublabel": "Programs/antigravity/resources",
+      "pos": [
+        370,
+        280
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "tag": "app.asar + app.asar.bak"
+    },
+    {
+      "id": "electron",
+      "type": "backend",
+      "label": "Antigravity Electron",
+      "sublabel": "main.js · tray.js · menu.js",
+      "pos": [
+        370,
+        110
+      ],
+      "size": [
+        180,
+        66
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "messagebus",
+      "label": "Preload Bridge",
+      "sublabel": "dist/preload.js · contextIsolation",
+      "pos": [
+        690,
+        110
+      ],
+      "size": [
+        180,
+        66
+      ],
+      "tag": "Ізольоване середовище"
+    },
+    {
+      "id": "injector",
+      "type": "backend",
+      "label": "i18n DOM-інжектор",
+      "sublabel": "uk_translations.json · 1 671 слів",
+      "pos": [
+        690,
+        280
+      ],
+      "size": [
+        180,
+        72
+      ]
+    },
+    {
+      "id": "shield",
+      "type": "security",
+      "label": "Захисний екран",
+      "sublabel": "Monaco, термінал, лігатури",
+      "pos": [
+        1010,
+        110
+      ],
+      "size": [
+        180,
+        66
+      ],
+      "tag": "White-list"
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "Українізований UI",
+      "sublabel": "чат, налаштування, стан агентів",
+      "pos": [
+        1010,
+        280
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "tag": "100% переклад"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Контур встановлення та дистрибуції",
+      "wraps": [
+        "github",
+        "installer",
+        "fs"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Середовище виконання Electron та ядра локалізації",
+      "wraps": [
+        "electron",
+        "bridge",
+        "injector",
+        "ui"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Цілісність даних: захист коду від автоперекладу",
+      "wraps": [
+        "shield",
+        "ui"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "github-installer",
+      "from": "github",
+      "to": "installer",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "перевірка версії",
+      "labelDy": 30,
+      "variant": "emphasis"
+    },
+    {
+      "id": "installer-fs",
+      "from": "installer",
+      "to": "fs",
+      "label": "підміна app.asar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "fs-electron",
+      "from": "fs",
+      "to": "electron",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "label": "завантаження ресурсів",
+      "labelDy": -20
+    },
+    {
+      "id": "electron-bridge",
+      "from": "electron",
+      "to": "bridge",
+      "label": "ініціалізація вікна"
+    },
+    {
+      "id": "bridge-injector",
+      "from": "bridge",
+      "to": "injector",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "DOM-ін'єкція",
+      "labelDy": 30,
+      "variant": "emphasis"
+    },
+    {
+      "id": "injector-ui",
+      "from": "injector",
+      "to": "ui",
+      "label": "MutationObserver",
+      "variant": "emphasis"
+    },
+    {
+      "id": "shield-ui",
+      "from": "shield",
+      "to": "ui",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "фільтр виключень",
+      "labelDy": 30,
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Автономний інсталятор",
+      "items": [
+        "Вага 4.7 МБ: містить повний пакет app_uk.asar всередині без важких бінарників",
+        "Безпека: автобекап app.asar.bak перед заміною та відновлення оригіналу в 1 клік",
+        "Перевірка оновлень: один запит до GitHub API суворо при запуску без фонових служб"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Ядро локалізації",
+      "items": [
+        "1 671 перекладений термін: повне покриття діалогів, налаштувань, підказок та статусів",
+        "MutationObserver: динамічний переклад асинхронних елементів без затримок інтерфейсу",
+        "Локалізовані меню та системний трей Windows з підтримкою гарячих клавіш"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Захист коду розробника",
+      "items": [
+        "Сувора ізоляція: теги pre, code, Monaco Editor та xterm-термінали не чіпаються",
+        "Білий список шрифтових лігатур: Material Symbols залишаються іконками",
+        "Призначений для користувача ввід та системні змінні захищені від автозаміни"
+      ]
+    }
+  ]
+}
