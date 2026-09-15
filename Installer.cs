@@ -51,7 +51,7 @@ namespace AntigravityUkrainianInstaller
         {
             InitializeComponent();
             CheckStatuses();
-            CheckForUpdatesInBackground();
+            this.Shown += (s, e) => CheckUpdateOnStartup();
         }
 
         private void InitializeComponent()
@@ -289,7 +289,7 @@ namespace AntigravityUkrainianInstaller
                 Font = new Font("Segoe UI", 8.5f),
                 LinkColor = Color.FromArgb(95, 99, 104),
                 ActiveLinkColor = Color.FromArgb(26, 115, 232),
-                Text = "Локалізація v" + CurrentVersion + " • GitHub: " + RepoOwner + "/" + RepoName + " • Перевірка оновлень..."
+                Text = "Локалізація v" + CurrentVersion + " • GitHub: " + RepoOwner + "/" + RepoName
             };
             lnkFooter.LinkClicked += LnkFooter_LinkClicked;
             this.Controls.Add(lnkFooter);
@@ -384,13 +384,13 @@ namespace AntigravityUkrainianInstaller
             }
         }
 
-        private void CheckForUpdatesInBackground()
+        private void CheckUpdateOnStartup()
         {
+            // Одноразова перевірка при запуску програми
             ThreadPool.QueueUserWorkItem(state =>
             {
                 try
                 {
-                    // Enable TLS 1.2 for modern GitHub API HTTPS requests
                     ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls;
                     using (WebClient client = new WebClient())
                     {
@@ -432,10 +432,24 @@ namespace AntigravityUkrainianInstaller
                                     lblUpdateText.Text = "🚀 Доступна нова версія: " + tag + "!";
                                     lnkFooter.Text = "Доступне оновлення: " + tag + " • Натисніть для переходу на GitHub";
                                     lnkFooter.LinkColor = Color.FromArgb(26, 115, 232);
+
+                                    // Повідомлення при запуску
+                                    DialogResult res = MessageBox.Show(this,
+                                        "Вийшла нова версія української локалізації (" + tag + ")!\n\nБажаєте відкрити сторінку завантаження оновлення зараз?",
+                                        "Доступне оновлення локалізації", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                                    if (res == DialogResult.Yes)
+                                    {
+                                        Process.Start(new ProcessStartInfo
+                                        {
+                                            FileName = latestReleaseUrl,
+                                            UseShellExecute = true
+                                        });
+                                    }
                                 }
                                 else
                                 {
-                                    lnkFooter.Text = "✓ Встановлено найновішу версію (v" + CurrentVersion + ") • Репозиторій: " + RepoOwner + "/" + RepoName;
+                                    lnkFooter.Text = "✓ Найновіша версія (v" + CurrentVersion + ") • GitHub: " + RepoOwner + "/" + RepoName;
                                     lnkFooter.LinkColor = Color.FromArgb(19, 115, 51);
                                 }
                             }));
