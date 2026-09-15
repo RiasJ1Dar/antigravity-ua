@@ -1,0 +1,8 @@
+# Official 150MB binary
+Antigravity-x64.exe
+
+# Temporary / intermediate files
+test_packed.asar
+*.bak
+*.tmp
+__pycache__/
