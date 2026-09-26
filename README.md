@@ -20,6 +20,10 @@
    - Запропонує запустити **Antigravity 2.0** з українським інтерфейсом.
 4. Якщо ви захочете повернути оригінальну англійську версію, відкрийте інсталятор і натисніть кнопку **«⟲ Відновити оригінал (EN)»**.
 
+Типова тека Antigravity — `%LOCALAPPDATA%\Programs\antigravity`; якщо програма стоїть деінде, шлях
+можна змінити у вікні інсталятора. Замінюється файл `resources\app.asar`, оригінал лежить поруч як
+`resources\app.asar.bak`. Перед заміною інсталятор закриває процеси `Antigravity` і `language_server`.
+
 ---
 
 ## ✨ Особливості локалізації
@@ -56,7 +60,29 @@
 - **`i18n_dom_injector.js`** — оптимізований DOM-інжектор для `preload.js` (TreeWalker + MutationObserver).
 - **`wizardHtml_uk.js`** — локалізований майстер першого запуску IDE.
 - **`asar_packer.py`** — пакувальник/розпаковувач ASAR на чистому Python (блоковий SHA-256 по 4 МБ, підтримка unpacked).
-- **`chunks/`** — почастинно перекладені модулі інтерфейсу (4 частини).
+- **`chunks/`** — рядки інтерфейсу, поділені на 4 частини: `chunk_N.json` (оригінал) і `translated_chunk_N.json` (переклад).
+- **`generate_dictionary.py`** — вбудований словник перекладів, який дописується в `uk_translations.json`.
+- **`extracted_raw_strings.json`** — усі рядки, витягнуті з інтерфейсу (1533).
+- **`clean_ui_to_translate.json`** — ті самі рядки без службових і шаблонних (1500).
+- **`untranslated.json`** — рядки, які ще не мають перекладу.
+- **`settings_pairs.json`** — назви параметрів налаштувань і їхні описи англійською.
+
+---
+
+## 🧰 Допоміжні скрипти
+
+Потрібен Python 3, сторонніх бібліотек не треба.
+
+```powershell
+# розпакувати оригінальний архів Electron
+python asar_packer.py unpack "$env:LOCALAPPDATA\Programs\antigravity\resources\app.asar" .\app
+# запакувати теку назад; третій аргумент (необов'язковий) — тека файлів, що лишаються поза архівом
+python asar_packer.py pack .\app app_uk.asar .\app.asar.unpacked
+# дописати вбудований словник у uk_translations.json (наявні ключі не губляться)
+python generate_dictionary.py
+```
+
+Окремого скрипта, який збирає `app_uk.asar` з цих файлів одною командою, у репозиторії немає.
 
 ---
 
