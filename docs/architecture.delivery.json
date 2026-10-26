@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "d619e808-2cea-4ba0-a3d6-45f8af020292",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\Public\\archify-20261026\\antigravity-ua\\.archify\\architecture-antigravity-ua-20261026-214000\\candidate.json",
+  "output": "C:\\Users\\Public\\archify-20261026\\antigravity-ua\\docs\\architecture.html",
+  "specification": {
+    "sha256": "980648b00c6ffedb3ee7499b79006bba108916ba982630894a11f9ededb79150",
+    "bytes": 6865
+  },
+  "artifact": {
+    "sha256": "1ca0b70703bbb67580734f98844c358af353b5a6d8505d0d0c70c54e4972a2a2",
+    "bytes": 829263
+  }
+}

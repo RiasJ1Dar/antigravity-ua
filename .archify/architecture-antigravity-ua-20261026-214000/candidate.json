@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Antigravity UA: локалізація від інсталятора до DOM",
+    "output": "docs/architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/RiasJ1Dar/antigravity-ua.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "3cf5cbce57fb76927716e72f36bde768ab729959"
+    },
+    "views": [
+      {
+        "id": "shlyah-vstanovlennya",
+        "label": "Шлях встановлення",
+        "focus": ["github", "installer", "fs", "electron"],
+        "note": "Від перевірки оновлення на GitHub до підміни app.asar."
+      },
+      {
+        "id": "kontur-perekladu",
+        "label": "Контур ін'єкції та DOM",
+        "focus": ["electron", "bridge", "injector", "ui"],
+        "note": "Ізольований міст і динамічний переклад DOM у реальному часі."
+      },
+      {
+        "id": "zahyst-kodu",
+        "label": "Захист коду й лігатур",
+        "focus": ["shield", "ui"],
+        "note": "Ізоляція Monaco Editor, терміналів і шрифтових гліфів."
+      }
+    ]
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": [40, 48],
+    "cols": 5,
+    "cellW": 125,
+    "cellH": 70,
+    "gapX": 70,
+    "gapY": 95
+  },
+  "components": [
+    {
+      "id": "github", "type": "external", "label": "GitHub Releases", "sublabel": "один запит",
+      "row": 0, "col": 0,
+      "sources": [
+        { "path": "Installer.cs", "line": 29, "label": "releases/latest" },
+        { "path": "README.md", "line": 39, "end_line": 40, "label": "без фонових служб" }
+      ]
+    },
+    {
+      "id": "installer", "type": "frontend", "label": "Setup.exe", "sublabel": "WinForms, 4.7 МБ",
+      "row": 0, "col": 1,
+      "sources": [
+        { "path": "Installer.cs", "line": 182, "end_line": 211, "label": "перевірка процесів" },
+        { "path": "asar_packer.py", "line": 1, "label": "пакування asar" }
+      ]
+    },
+    {
+      "id": "electron", "type": "backend", "label": "Antigravity", "sublabel": "Electron-хост",
+      "row": 0, "col": 2,
+      "sources": [{ "path": "README.md", "line": 16, "end_line": 20, "label": "запуск після заміни" }]
+    },
+    {
+      "id": "bridge", "type": "messagebus", "label": "Preload-міст", "sublabel": "ізольований контекст",
+      "row": 0, "col": 3,
+      "sources": [{ "path": "i18n_dom_injector.js", "line": 1, "end_line": 8, "label": "вхід інжектора" }]
+    },
+    {
+      "id": "fs", "type": "database", "label": "resources/", "sublabel": "LOCALAPPDATA",
+      "row": 1, "col": 1,
+      "sources": [{ "path": "Installer.cs", "line": 305, "label": "шлях і .bak" }]
+    },
+    {
+      "id": "injector", "type": "backend", "label": "DOM-інжектор", "sublabel": "1 671 рядок",
+      "row": 1, "col": 2,
+      "sources": [
+        { "path": "i18n_dom_injector.js", "line": 1867, "end_line": 1892, "label": "MutationObserver" },
+        { "path": "uk_translations.json", "line": 1, "label": "словник" }
+      ]
+    },
+    {
+      "id": "ui", "type": "frontend", "label": "UI українською", "sublabel": "чат, налаштування",
+      "row": 1, "col": 3,
+      "sources": [
+        { "path": "wizardHtml_uk.js", "line": 1, "label": "вікна майстра" },
+        { "path": "settings_pairs.json", "line": 1, "label": "пари налаштувань" }
+      ]
+    },
+    {
+      "id": "shield", "type": "security", "label": "Захисний екран", "sublabel": "код і лігатури",
+      "row": 1, "col": 4,
+      "sources": [
+        { "path": "i18n_dom_injector.js", "line": 1736, "label": "контейнери коду" },
+        { "path": "i18n_dom_injector.js", "line": 1750, "end_line": 1758, "label": "білий список" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Встановлення і дистрибуція",
+      "wraps": ["github", "installer", "fs"]
+    },
+    {
+      "kind": "region",
+      "label": "Виконання Electron і ядро локалізації",
+      "wraps": ["electron", "bridge", "injector", "ui"]
+    }
+  ],
+  "connections": [
+    { "id": "gh-installer", "from": "github", "to": "installer", "label": "версія" },
+    { "id": "installer-fs", "from": "installer", "to": "fs", "label": "підміна", "variant": "emphasis", "fromSide": "bottom", "toSide": "top" },
+    { "id": "fs-electron", "from": "fs", "to": "electron", "label": "ресурси", "variant": "emphasis" },
+    { "id": "electron-bridge", "from": "electron", "to": "bridge", "label": "вікно" },
+    { "id": "bridge-injector", "from": "bridge", "to": "injector", "label": "ін'єкція", "variant": "emphasis" },
+    { "id": "injector-ui", "from": "injector", "to": "ui", "label": "DOM", "variant": "emphasis" },
+    { "id": "shield-ui", "from": "shield", "to": "ui", "label": "фільтр", "variant": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Автономний інсталятор",
+      "items": [
+        "Повний пакет app_uk.asar лежить усередині 4.7 МБ без важких бінарників",
+        "Перед заміною створюється app.asar.bak; відновлення оригіналу в один клік",
+        "Запущені процеси перевіряються й завершуються до підміни",
+        "Оновлення перевіряється одним запитом при запуску, без фонових служб"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Ядро локалізації",
+      "items": [
+        "1 671 перекладена сутність: меню, трей, панелі агентів, налаштування",
+        "MutationObserver із пакетуванням через requestAnimationFrame перекладає асинхронні елементи",
+        "Трей має правильну плюралізацію: 1 агент працює, 2 агенти працюють, 5 агентів працює"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Захист коду розробника",
+      "items": [
+        "pre, code, Monaco Editor і xterm-термінали не чіпаються",
+        "Лігатури Material Symbols і codicon у білому списку, тож іконки лишаються іконками",
+        "Ввід користувача захищений від автозаміни"
+      ]
+    }
+  ]
+}
